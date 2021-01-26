@@ -1,0 +1,68 @@
+package me.study.springbatch.job;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Slf4j
+@Configuration
+@RequiredArgsConstructor
+public class SimpleNextJobConfiguration {
+
+    private final JobBuilderFactory jobBuilderFactory;
+    private final StepBuilderFactory stepBuilderFactory;
+
+    /**
+     *
+     * spring.batch.job.names: ${job.name:NONE} 속성으로 파라미터로 넘긴
+     * JobName이 일치하지 않으면 Job이 실행되지 않도록 구현할 수 있다.
+     * --job.name=stepNextJob requestDate=20210126_2
+     *
+     */
+
+    @Bean
+    public Job stepNextJob() {
+        return jobBuilderFactory.get("stepNextJob")
+                .start(step1())
+                .next(step2())
+                .next(step3())
+                .build();
+    }
+
+
+    @Bean
+    public Step step1() {
+        return stepBuilderFactory.get("step1")
+                .tasklet((contribution, chunkContext) -> {
+                    log.info("step 1");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+
+    @Bean
+    public Step step2() {
+        return stepBuilderFactory.get("step2")
+                .tasklet((contribution, chunkContext) -> {
+                    log.info("step 2");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+
+    @Bean
+    public Step step3() {
+        return stepBuilderFactory.get("step3")
+                .tasklet((contribution, chunkContext) -> {
+                    log.info("step 3");
+                    return RepeatStatus.FINISHED;
+                })
+                .build();
+    }
+}
