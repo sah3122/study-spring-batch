@@ -1,7 +1,8 @@
 package me.study.springbatch.job;
 
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.study.springbatch.domain.Pay;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -13,13 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.sql.DataSource;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Cursor는 한번 Connection을 맺으면 배치 작업이 끝날때까지 커넥션을 유지한다.
@@ -67,32 +62,5 @@ public class JdbcCursorItemReaderJobConfiguration {
         return items -> items.forEach(item -> log.info("{}", item));
     }
 
-    @ToString
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @Entity
-    private static class Pay {
-        private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
-        private Long amount;
-        private String txName;
-        private LocalDateTime txDateTime;
-
-        public Pay(Long amount, String txName, String txDateTime) {
-            this.amount = amount;
-            this.txName = txName;
-            this.txDateTime = LocalDateTime.parse(txDateTime, FORMATTER);
-        }
-
-        public Pay(Long id, Long amount, String txName, String txDateTime) {
-            this.id = id;
-            this.amount = amount;
-            this.txName = txName;
-            this.txDateTime = LocalDateTime.parse(txDateTime, FORMATTER);
-        }
-    }
 }
